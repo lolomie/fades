@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { saveAuth } from '@/lib/token';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,12 +15,23 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setIsLoading(false);
-    if (form.email && form.password) {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email, password: form.password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? 'Anmeldung fehlgeschlagen.');
+        return;
+      }
+      saveAuth({ token: data.token, user: data.user });
       router.push('/dashboard');
-    } else {
-      setError('Bitte alle Felder ausfüllen.');
+    } catch {
+      setError('Verbindungsfehler. Bitte erneut versuchen.');
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -52,7 +64,9 @@ export default function LoginPage() {
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="text-sm font-medium text-gray-700">Passwort</label>
-              <Link href="#" className="text-xs text-gray-500 hover:text-black">Vergessen?</Link>
+              <Link href="#" className="text-xs text-gray-500 hover:text-black">
+                Vergessen?
+              </Link>
             </div>
             <input
               type="password"
@@ -68,7 +82,7 @@ export default function LoginPage() {
             disabled={isLoading}
             className="w-full bg-black text-white font-semibold py-3 rounded-xl hover:bg-gray-800 transition-all disabled:opacity-50 text-sm mt-2"
           >
-            {isLoading ? 'Anmelden...' : 'Anmelden'}
+            {isLoading ? 'Anmelden…' : 'Anmelden'}
           </button>
         </form>
 
