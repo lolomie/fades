@@ -19,7 +19,6 @@ export async function GET(req: NextRequest) {
         phone: true,
         role: true,
         color: true,
-        commissionRate: true,
         createdAt: true,
       },
       orderBy: { firstName: 'asc' },

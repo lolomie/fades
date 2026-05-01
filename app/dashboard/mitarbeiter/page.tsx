@@ -11,7 +11,6 @@ interface Employee {
   phone: string | null;
   role: string;
   color: string | null;
-  commissionRate: number | null;
   createdAt: string;
 }
 
@@ -91,11 +90,6 @@ export default function MitarbeiterPage() {
                     {roleLabels[emp.role] ?? emp.role}
                   </span>
                 </div>
-                {emp.commissionRate != null && (
-                  <div className="text-sm text-gray-500 hidden md:block">
-                    {emp.commissionRate}% Provision
-                  </div>
-                )}
                 <div className="text-xs text-gray-400 hidden lg:block">
                   {emp.phone ?? '—'}
                 </div>
